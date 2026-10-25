@@ -28,8 +28,18 @@ outer.right = 10
 outer.bottom = 10
 outer.top = 44            # 34px SketchyBar + breathing room
 
+# Docked: focus work on the external screen, comms on the laptop screen.
+# Laptop only: every workspace falls back to 'main'.
 [workspace-to-monitor-force-assignment]
-# Filled per desk setup if wanted, e.g. 3 = 'secondary'
+1 = ['secondary', 'main']    # terminal
+2 = ['secondary', 'main']    # browser
+5 = ['secondary', 'main']
+6 = ['secondary', 'main']
+7 = ['secondary', 'main']
+3 = ['built-in', 'main']     # Teams / Slack
+4 = ['built-in', 'main']     # Outlook
+8 = ['built-in', 'main']
+9 = ['built-in', 'main']
 
 [mode.main.binding]
 # --- Launch ---------------------------------------------------------------------
@@ -106,6 +116,10 @@ cmd-ctrl-alt-l = ['join-with right', 'mode main']
 # --- Window rules ---------------------------------------------------------------
 [[on-window-detected]]
 if.app-id = 'com.apple.Safari'
+run = 'move-node-to-workspace 2'
+
+[[on-window-detected]]
+if.app-id = 'com.google.Chrome'
 run = 'move-node-to-workspace 2'
 
 [[on-window-detected]]
