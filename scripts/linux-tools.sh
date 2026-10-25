@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # omacy Linux toolset — static release binaries from GitHub, installed under a prefix (default ~/.local).
-# Needs only curl + tar + api.github.com/github.com access: no root, no apt, no PyPI, no mise.run.
+# Needs only curl + tar + github.com access: no root, no apt, no PyPI, no mise.run. (zsh comes from the
+# distro — see install.sh: a portable zsh-bin build could not read terminfo and garbled line editing.)
 # Used by install.sh on Coder/servers, and by dot-push on the Mac to build offline bundles.
 #
 #   scripts/linux-tools.sh install [prefix] [arch]   install missing tools (OMACY_UPDATE=1 reinstalls)
@@ -26,7 +27,6 @@ OMACY_TOOLS=(
 # Whole-directory installs (prefix/opt/<name>, bin symlinked).
 OMACY_DIRS=(
   "nvim neovim/neovim ^nvim-linux-@A\\.tar\\.gz$ bin/nvim"
-  "zsh romkatv/zsh-bin ^zsh-[0-9.]+-linux-@R\\.tar\\.gz$ bin/zsh"
 )
 
 _ot_log() { printf '  %s\n' "$*"; }
@@ -84,19 +84,16 @@ omacy_linux_tools() { # prefix [arch]
   for entry in "${OMACY_DIRS[@]}"; do
     read -r name repo re rel <<<"$entry"
     [[ -x $prefix/opt/$name/$rel && -z ${OMACY_UPDATE:-} ]] && continue
-    [[ $name == zsh ]] && command -v zsh >/dev/null && [[ $(command -v zsh) != "$prefix"/* ]] && continue # system zsh wins
     url=$(_ot_asset "$repo" "$(_ot_regex "$re")") || url=
     [[ -n $url ]] || { _ot_log "✗ $name: no release asset found ($repo)"; continue; }
     tmp=$(_ot_fetch "$url")
-    # Archives either wrap everything in one top folder (nvim) or unpack bin/ share/ directly (zsh-bin).
+    # Archives either wrap everything in one top folder (nvim) or unpack bin/ share/ directly.
     if [[ -e $tmp/$rel ]]; then found=$tmp; else found=$(find "$tmp" -mindepth 1 -maxdepth 1 -type d | head -1); fi
     rm -rf "$prefix/opt/$name" && mv "$found" "$prefix/opt/$name"
     [[ $found == "$tmp" ]] || rm -rf "$tmp"
     ln -sfn "$prefix/opt/$name/$rel" "$prefix/bin/$name"
     _ot_log "✓ $name ← ${url##*/}"
   done
-  # zsh-bin ships a relocation helper; it must run once after moving the tree.
-  [[ -x $prefix/opt/zsh/share/zsh/5.8/scripts/relocate ]] && "$prefix/opt/zsh/share/zsh/5.8/scripts/relocate" >/dev/null 2>&1 || true
 }
 
 omacy_linux_tools_check() { # [arch]

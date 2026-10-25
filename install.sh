@@ -46,6 +46,23 @@ fi
 # so everything lives under ~/.local and only missing pieces are downloaded. OMACY_UPDATE=1 refreshes tools.
 source "$REPO/scripts/linux-tools.sh"
 
+# zsh from the distro (reads the system terminfo). On Coder the root filesystem resets on restart, so this
+# reinstalls each start (~7s from the internal mirror). No zsh available → interactive shells stay in bash.
+ensure_zsh() {
+  # Remove the old portable zsh-bin: it could not read terminfo, which garbled line editing.
+  [[ -L $BIN/zsh && $(readlink "$BIN/zsh") == "$HOME/.local/opt/zsh/"* ]] && rm -f "$BIN/zsh"
+  rm -rf "$HOME/.local/opt/zsh"
+  command -v zsh >/dev/null && return 0
+  if command -v apt-get >/dev/null && sudo -n true 2>/dev/null; then
+    log "zsh (apt)"
+    sudo -n DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends zsh >/dev/null 2>&1 ||
+      { sudo -n apt-get update -qq >/dev/null 2>&1 && sudo -n DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends zsh >/dev/null 2>&1; } ||
+      log "zsh could not be installed — staying in bash"
+  else
+    log "No zsh and no passwordless sudo — staying in bash (ask IT for zsh)"
+  fi
+}
+
 if ((OFFLINE)); then
   BUNDLE="$HOME/.local/share/omacy-bundle"
   [[ -d $BUNDLE/bin ]] || { echo "No bundle at $BUNDLE — run 'dot-push <host>' from the Mac." >&2; exit 1; }
@@ -57,6 +74,7 @@ if ((OFFLINE)); then
     mkdir -p "$HOME/.local/share/${d%/*}"
     rm -rf "$HOME/.local/share/$d" && cp -R "$BUNDLE/share/$d" "$HOME/.local/share/$d"
   done
+  ensure_zsh
   log "Dotfiles (chezmoi, externals from bundle)"
   chezmoi init --source "$REPO" --apply --force --promptDefaults --exclude externals   # --force: no TTY at Coder start; repo wins
   mkdir -p "$HOME/.config/zsh/conf.d"
@@ -65,6 +83,7 @@ if ((OFFLINE)); then
 else
   log "Tools → ~/.local (only what's missing)"
   omacy_linux_tools "$HOME/.local"
+  ensure_zsh
   log "Dotfiles (chezmoi)"
   chezmoi init --source "$REPO" --apply --force --promptDefaults   # --force: no TTY at Coder start; repo wins
   rm -f "$HOME/.config/zsh/conf.d/00-omacy-offline.zsh"
@@ -79,8 +98,8 @@ cat >>"$HOME/.bashrc" <<'BASHRC'
 # >>> omacy >>> (managed by omacy install.sh; set OMACY_NO_ZSH=1 to stay in bash)
 # Only real terminal sessions: never `bash -c` / `bash -ic "cmd"` (IDEs, agents, scripts keep bash).
 if [[ $- == *i* && -t 0 && -z ${BASH_EXECUTION_STRING:-} && -z ${ZSH_VERSION:-} && -z ${OMACY_NO_ZSH:-} ]]; then
-  _omacy_zsh=$(command -v zsh 2>/dev/null || echo "$HOME/.local/bin/zsh")
-  [[ -x $_omacy_zsh ]] && SHELL=$_omacy_zsh exec "$_omacy_zsh" -l
+  _omacy_zsh=$(command -v zsh 2>/dev/null)
+  [[ -n $_omacy_zsh ]] && SHELL=$_omacy_zsh exec "$_omacy_zsh" -l
   unset _omacy_zsh
 fi
 # <<< omacy <<<
