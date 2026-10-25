@@ -41,8 +41,8 @@ brew "mise"
 brew "uv"
 brew "node"
 
-# --- Remote / work ----------------------------------------------------------
-brew "coder"
+# Coder CLI is NOT installed from Homebrew: it must match your deployment's server version.
+# Download it from your deployment (https://<coder-host>/bin/coder-darwin-arm64) into ~/.local/bin.
 
 # --- Desktop ----------------------------------------------------------------
 brew "FelixKratz/formulae/sketchybar"
