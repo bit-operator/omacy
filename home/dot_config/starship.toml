@@ -1,0 +1,56 @@
+# ANSI color names only — the palette comes from the terminal theme.
+"$schema" = "https://starship.rs/config-schema.json"
+add_newline = true
+command_timeout = 500          # big repos on NFS build servers must not stall the prompt
+
+format = """
+$hostname$directory$git_branch$git_state$git_status$python$cmd_duration$jobs
+$character"""
+
+[hostname]
+ssh_only = true
+format = "[󰒋 $hostname]($style) [│](bright-black) "
+style = "bold yellow"
+
+[directory]
+style = "bold blue"
+truncation_length = 4
+truncation_symbol = "…/"
+read_only = " 󰌾"
+
+[git_branch]
+symbol = " "
+format = "[$symbol$branch(:$remote_branch)]($style) "
+style = "magenta"
+
+[git_status]
+format = "([$all_status$ahead_behind]($style) )"
+style = "cyan"
+ahead = "⇡${count}"
+behind = "⇣${count}"
+diverged = "⇕⇡${ahead_count}⇣${behind_count}"
+ignore_submodules = true
+
+[git_state]
+style = "bold yellow"
+
+[python]
+format = "[$symbol$virtualenv]($style) "
+symbol = " "
+style = "yellow"
+detect_extensions = []
+detect_files = []
+
+[cmd_duration]
+min_time = 3000
+format = "[ $duration]($style) "
+style = "bright-black"
+
+[jobs]
+symbol = "✦"
+style = "bright-black"
+
+[character]
+success_symbol = "[❯](bold green)"
+error_symbol = "[❯](bold red)"
+vimcmd_symbol = "[❮](bold magenta)"

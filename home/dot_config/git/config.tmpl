@@ -1,0 +1,69 @@
+[user]
+	name = {{ .name }}
+	email = {{ .email }}
+
+# Machine-specific settings (signing key, credential helpers): ~/.config/git/local.gitconfig — not tracked.
+[include]
+	path = ~/.config/git/local.gitconfig
+# Work identity/settings for company repos (filled by the internal dotfiles layer).
+[includeIf "gitdir:~/work/"]
+	path = ~/.config/git/work.gitconfig
+
+[core]
+	pager = delta
+	autocrlf = input
+[interactive]
+	diffFilter = delta --color-only
+[delta]
+	navigate = true
+	line-numbers = true
+	syntax-theme = ansi
+	hyperlinks = true
+[diff]
+	algorithm = histogram
+	colorMoved = default
+	mnemonicPrefix = true
+	renames = true
+[merge]
+	conflictStyle = zdiff3
+
+[init]
+	defaultBranch = main
+[pull]
+	rebase = true
+[push]
+	autoSetupRemote = true
+	default = current
+	followTags = true
+[fetch]
+	prune = true
+	pruneTags = true
+[rebase]
+	autoStash = true
+	autoSquash = true
+	updateRefs = true
+[rerere]
+	enabled = true
+	autoupdate = true
+[branch]
+	sort = -committerdate
+[tag]
+	sort = version:refname
+[column]
+	ui = auto
+[commit]
+	verbose = true
+[help]
+	autocorrect = prompt
+
+[alias]
+	st = status -sb
+	co = checkout
+	sw = switch
+	br = branch -vv
+	lg = log --graph --pretty=format:'%C(magenta)%h%Creset %C(blue)%an%Creset %s %C(brightblack)(%cr)%Creset%C(yellow)%d%Creset' --abbrev-commit
+	last = log -1 HEAD --stat
+	amend = commit --amend --no-edit
+	fixup = commit --fixup
+	unstage = restore --staged
+	wip = !git add -A && git commit -m 'wip' --no-verify

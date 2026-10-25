@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# ghostty-new [command...] — open a new window in the running Ghostty (never a second app instance),
+# optionally running a command through an interactive login zsh (so aliases/functions work).
+set -euo pipefail
+
+if ! pgrep -xq ghostty; then
+  # Cold start: launching the app already opens one window.
+  if (($# == 0)); then
+    open -a Ghostty
+    exit 0
+  fi
+  open -a Ghostty
+  sleep 0.6
+fi
+
+if (($# == 0)); then
+  osascript -e 'tell application "Ghostty" to new window' -e 'tell application "Ghostty" to activate' >/dev/null
+else
+  osascript - "$*" "$HOME" >/dev/null <<'APPLESCRIPT'
+on run argv
+  tell application "Ghostty"
+    set cfg to new surface configuration
+    set command of cfg to "/bin/zsh -lic " & quoted form of (item 1 of argv)
+    set initial working directory of cfg to item 2 of argv
+    new window with configuration cfg
+    activate
+  end tell
+end run
+APPLESCRIPT
+fi

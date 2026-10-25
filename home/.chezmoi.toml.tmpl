@@ -1,0 +1,14 @@
+{{- /* Per-machine data. Nothing here is committed: chezmoi renders it to ~/.config/chezmoi/chezmoi.toml. */ -}}
+{{- $name := env "OMAMAC_NAME" -}}
+{{- if not $name -}}{{- $name = promptStringOnce . "name" "Git author name" -}}{{- end -}}
+{{- $email := env "OMAMAC_EMAIL" -}}
+{{- if not $email -}}{{- $email = promptStringOnce . "email" "Git author email" -}}{{- end -}}
+
+sourceDir = {{ .chezmoi.workingTree | quote }}
+
+[data]
+  name = {{ $name | quote }}
+  email = {{ $email | quote }}
+
+[diff]
+  pager = "delta"

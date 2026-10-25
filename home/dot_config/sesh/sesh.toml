@@ -1,0 +1,15 @@
+# Named sessions shown under ^g in the picker. Work projects go in local.toml (work layer).
+import = ["~/.config/sesh/local.toml"]
+
+[default_session]
+preview_command = "eza --all --git --icons --color=always --group-directories-first {}"
+
+[[session]]
+name = "dotfiles"
+path = "~/Projects/MacOS-Personalization"
+startup_command = "nvim"
+
+[[session]]
+name = "nvim config"
+path = "~/.config/nvim"
+startup_command = "nvim"

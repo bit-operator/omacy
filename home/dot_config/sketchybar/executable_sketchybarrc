@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+# omamac SketchyBar — Waybar-style top bar. Colors follow `theme`.
+CONFIG_DIR="${CONFIG_DIR:-$HOME/.config/sketchybar}"
+PLUGIN_DIR="$CONFIG_DIR/plugins"
+export PATH="/opt/homebrew/bin:$PATH"
+source "$CONFIG_DIR/colors.sh"
+
+sketchybar --bar position=top height=34 color="$BAR_COLOR" blur_radius=24 \
+  padding_left=10 padding_right=10 shadow=off sticky=on topmost=off
+
+sketchybar --default updates=when_shown \
+  icon.font="$FONT:Bold:14.0" icon.color="$FG" icon.padding_left=4 icon.padding_right=4 \
+  label.font="$FONT:Semibold:13.0" label.color="$FG" label.padding_left=4 label.padding_right=4 \
+  padding_left=3 padding_right=3 background.height=24 background.corner_radius=7
+
+# --- Left: AeroSpace workspaces + front app ------------------------------------
+sketchybar --add event aerospace_workspace_change
+
+workspaces=$(aerospace list-workspaces --all 2>/dev/null) || workspaces=$(seq 1 9)
+for sid in $workspaces; do
+  sketchybar --add item "space.$sid" left \
+    --set "space.$sid" drawing=off icon="$sid" icon.font="$FONT:Bold:13.0" icon.padding_left=9 \
+      label.font="sketchybar-app-font:Regular:14.0" label.padding_right=10 label.y_offset=-1 \
+      background.color="$BG_HL" background.drawing=off \
+      click_script="aerospace workspace $sid"
+done
+
+sketchybar --add item aerospace left \
+  --set aerospace drawing=off updates=on script="$PLUGIN_DIR/aerospace.sh" \
+  --subscribe aerospace aerospace_workspace_change front_app_switched space_windows_change system_woke
+
+sketchybar --add item sep left --set sep icon="│" icon.color="$MUTED" label.drawing=off
+
+sketchybar --add item front_app left \
+  --set front_app icon.font="sketchybar-app-font:Regular:15.0" icon.color="$ACCENT" label.color="$FG" \
+    script="$PLUGIN_DIR/front_app.sh" \
+  --subscribe front_app front_app_switched
+
+# --- Right (first added = rightmost) ----------------------------------------------
+sketchybar --add item clock right \
+  --set clock icon=󰃰 icon.color="$ACCENT" update_freq=10 script="$PLUGIN_DIR/clock.sh"
+
+sketchybar --add item battery right \
+  --set battery update_freq=60 script="$PLUGIN_DIR/battery.sh" \
+  --subscribe battery power_source_change system_woke
+
+sketchybar --add item volume right \
+  --set volume script="$PLUGIN_DIR/volume.sh" \
+  --subscribe volume volume_change
+
+sketchybar --add item wifi right \
+  --set wifi update_freq=30 script="$PLUGIN_DIR/wifi.sh" label.drawing=off \
+  --subscribe wifi wifi_change system_woke
+
+sketchybar --add event input_change AppleSelectedInputSourcesChangedNotification
+sketchybar --add item input right \
+  --set input icon=󰌌 icon.color="$ACCENT2" script="$PLUGIN_DIR/input.sh" \
+  --subscribe input input_change
+
+sketchybar --add item mem right \
+  --set mem icon=󰍛 icon.color="$GREEN" update_freq=15 script="$PLUGIN_DIR/mem.sh"
+
+sketchybar --add item cpu right \
+  --set cpu icon=󰻠 icon.color="$CYAN" update_freq=5 script="$PLUGIN_DIR/cpu.sh"
+
+# Machine / work layer items (e.g. VPN status).
+for item in "$PLUGIN_DIR"/local/*.sh; do
+  [[ -r $item ]] && source "$item"
+done
+
+sketchybar --update
+sketchybar --trigger aerospace_workspace_change

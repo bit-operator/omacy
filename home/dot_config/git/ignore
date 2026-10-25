@@ -1,0 +1,10 @@
+.DS_Store
+*.swp
+.direnv/
+.envrc.local
+.env
+.env.*
+*.pem
+*.key
+compile_commands.json
+.cache/clangd/

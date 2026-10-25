@@ -1,0 +1,77 @@
+{
+  "global": { "show_in_menu_bar": false },
+  "profiles": [
+    {
+      "name": "omamac",
+      "selected": true,
+      "virtual_hid_keyboard": { "keyboard_type_v2": "ansi" },
+      "complex_modifications": {
+        "parameters": {
+          "basic.to_if_alone_timeout_milliseconds": 500,
+          "basic.to_if_held_down_threshold_milliseconds": 500
+        },
+        "rules": [
+          {
+            "description": "Caps Lock: tap → Escape, hold → Hyper (⌘⌃⌥). On the Defy, map a key to Caps Lock in Bazecor to get the same.",
+            "manipulators": [
+              {
+                "type": "basic",
+                "from": { "key_code": "caps_lock", "modifiers": { "optional": ["any"] } },
+                "to": [{ "key_code": "left_command", "modifiers": ["left_control", "left_option"] }],
+                "to_if_alone": [{ "key_code": "escape" }]
+              }
+            ]
+          },
+          {
+            "description": "Right ⌘ tap → toggle English / Hebrew (hold = normal ⌘)",
+            "manipulators": [
+              {
+                "type": "basic",
+                "conditions": [{ "type": "input_source_if", "input_sources": [{ "language": "^he$" }] }],
+                "from": { "key_code": "right_command", "modifiers": { "optional": ["any"] } },
+                "to": [{ "key_code": "right_command", "lazy": true }],
+                "to_if_alone": [{ "select_input_source": { "language": "^en$" } }]
+              },
+              {
+                "type": "basic",
+                "conditions": [{ "type": "input_source_unless", "input_sources": [{ "language": "^he$" }] }],
+                "from": { "key_code": "right_command", "modifiers": { "optional": ["any"] } },
+                "to": [{ "key_code": "right_command", "lazy": true }],
+                "to_if_alone": [{ "select_input_source": { "language": "^he$" } }]
+              }
+            ]
+          },
+          {
+            "description": "Windows-layout keyboards (not Apple / Dygma / Kensington): swap Alt ↔ Win so ⌘ sits next to Space",
+            "manipulators": [
+              {
+                "type": "basic",
+                "conditions": [{ "type": "device_unless", "identifiers": [{ "is_built_in_keyboard": true }, { "vendor_id": 1452 }, { "vendor_id": 76 }, { "vendor_id": 13807 }, { "vendor_id": 1149 }] }],
+                "from": { "key_code": "left_option", "modifiers": { "optional": ["any"] } },
+                "to": [{ "key_code": "left_command" }]
+              },
+              {
+                "type": "basic",
+                "conditions": [{ "type": "device_unless", "identifiers": [{ "is_built_in_keyboard": true }, { "vendor_id": 1452 }, { "vendor_id": 76 }, { "vendor_id": 13807 }, { "vendor_id": 1149 }] }],
+                "from": { "key_code": "left_command", "modifiers": { "optional": ["any"] } },
+                "to": [{ "key_code": "left_option" }]
+              },
+              {
+                "type": "basic",
+                "conditions": [{ "type": "device_unless", "identifiers": [{ "is_built_in_keyboard": true }, { "vendor_id": 1452 }, { "vendor_id": 76 }, { "vendor_id": 13807 }, { "vendor_id": 1149 }] }],
+                "from": { "key_code": "right_option", "modifiers": { "optional": ["any"] } },
+                "to": [{ "key_code": "right_command" }]
+              },
+              {
+                "type": "basic",
+                "conditions": [{ "type": "device_unless", "identifiers": [{ "is_built_in_keyboard": true }, { "vendor_id": 1452 }, { "vendor_id": 76 }, { "vendor_id": 13807 }, { "vendor_id": 1149 }] }],
+                "from": { "key_code": "right_command", "modifiers": { "optional": ["any"] } },
+                "to": [{ "key_code": "right_option" }]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+{{- if eq .chezmoi.os "darwin" -}}
+eval "$(/opt/homebrew/bin/brew shellenv zsh)"
+{{- end }}
+# ~/.local/bin must win over system/Homebrew binaries (remote bundles live there).
+path=("$HOME/.local/bin" ${path:#$HOME/.local/bin})

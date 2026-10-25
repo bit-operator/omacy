@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# Fuzzy session picker: tmux sessions, sesh configs, zoxide dirs and SSH hosts.
+# Bound to tmux `prefix s`, and to the `t` alias in zsh.
+set -euo pipefail
+
+ssh_hosts() {
+  # Concrete host aliases from ~/.ssh/config + config.d (no wildcards).
+  cat ~/.ssh/config ~/.ssh/config.d/* 2>/dev/null |
+    awk 'tolower($1)=="host" { for (i=2; i<=NF; i++) if ($i !~ /[*?!]/) print "󰒋 " $i }' | sort -u
+}
+
+[[ ${1:-} == --hosts ]] && { ssh_hosts; exit 0; }
+
+sel=$(sesh list -i | fzf --ansi --no-sort --height=100% --border=none \
+  --prompt '⚡ ' --header '^a all  ^t tmux  ^g configs  ^x zoxide  ^s ssh  ^d kill' \
+  --bind 'tab:down,btab:up' \
+  --bind 'ctrl-a:change-prompt(⚡ )+reload(sesh list -i)' \
+  --bind 'ctrl-t:change-prompt(  )+reload(sesh list -t -i)' \
+  --bind 'ctrl-g:change-prompt(  )+reload(sesh list -c -i)' \
+  --bind 'ctrl-x:change-prompt(  )+reload(sesh list -z -i)' \
+  --bind "ctrl-s:change-prompt(󰒋 )+reload($0 --hosts)" \
+  --bind 'ctrl-d:execute(tmux kill-session -t {2..})+change-prompt(⚡ )+reload(sesh list -i)') || exit 0
+
+if [[ $sel == "󰒋 "* ]]; then
+  host=${sel#"󰒋 "}
+  name="ssh-${host//[.:]/_}"
+  sesh connect --command "ssh $host" "$name" 2>/dev/null ||
+    { tmux new-session -d -s "$name" "ssh $host" 2>/dev/null; tmux switch-client -t "$name" 2>/dev/null || tmux attach -t "$name"; }
+else
+  sesh connect "$sel"
+fi

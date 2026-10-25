@@ -1,0 +1,40 @@
+# --- Look ---------------------------------------------------------------------
+# theme.conf is written by `theme <name>` (defaults to Tokyo Night).
+theme = TokyoNight Night
+config-file = ?theme.conf
+
+font-family = JetBrainsMono Nerd Font
+font-size = 14
+adjust-cell-height = 10%
+
+window-padding-x = 14
+window-padding-y = 10
+window-padding-balance = true
+macos-titlebar-style = hidden
+background-opacity = 0.96
+background-blur = 20
+cursor-style-blink = false
+mouse-hide-while-typing = true
+
+# --- Behaviour ------------------------------------------------------------------
+# no-cursor: the shell's vi-mode sets the cursor shape itself.
+# ssh-terminfo/ssh-env: remotes get a working TERM without manual terminfo installs.
+shell-integration-features = no-cursor,ssh-terminfo,ssh-env
+macos-option-as-alt = left
+confirm-close-surface = false
+window-save-state = never
+auto-update = off
+
+clipboard-read = allow
+clipboard-write = allow
+copy-on-select = clipboard
+desktop-notifications = true
+bell-features = attention,title
+
+# --- Keys -----------------------------------------------------------------------
+# Hyper (Caps) + ` → drop-down quick terminal from anywhere.
+keybind = global:ctrl+alt+super+grave_accent=toggle_quick_terminal
+quick-terminal-position = top
+quick-terminal-animation-duration = 0.1
+# Shift+Enter → newline in TUIs (Claude Code, etc.)
+keybind = shift+enter=text:\x1b\r

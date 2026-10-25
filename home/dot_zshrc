@@ -1,0 +1,5 @@
+# omamac zsh — modules live in ~/.config/zsh, machine/work layers in ~/.config/zsh/conf.d.
+for _f in "$XDG_CONFIG_HOME"/zsh/*.zsh(N) "$XDG_CONFIG_HOME"/zsh/conf.d/*.zsh(N); do
+  source "$_f"
+done
+unset _f

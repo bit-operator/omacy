@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# JankyBorders: accent border on the focused window. Re-run to apply a new theme to the running instance.
+THEME_ENV="$HOME/.config/omamac/current/theme.env"
+[[ -r $THEME_ENV ]] || THEME_ENV="$HOME/.config/omamac/themes/tokyonight/theme.env"
+source "$THEME_ENV"
+
+options=(
+  style=round
+  width=5.0
+  hidpi=on
+  active_color="0xff$ACCENT"
+  inactive_color="0x00$BG"
+)
+/opt/homebrew/bin/borders "${options[@]}"

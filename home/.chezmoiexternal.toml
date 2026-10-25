@@ -1,0 +1,37 @@
+# Third-party plugins, pinned to release tags. Bump a tag here, then `chezmoi apply`.
+
+[".local/share/zsh/plugins/zsh-autosuggestions"]
+  type = "archive"
+  url = "https://github.com/zsh-users/zsh-autosuggestions/archive/refs/tags/v0.7.1.tar.gz"
+  exact = true
+  stripComponents = 1
+
+[".local/share/zsh/plugins/fast-syntax-highlighting"]
+  type = "archive"
+  url = "https://github.com/zdharma-continuum/fast-syntax-highlighting/archive/refs/tags/v1.56.tar.gz"
+  exact = true
+  stripComponents = 1
+
+[".local/share/zsh/plugins/fzf-tab"]
+  type = "archive"
+  url = "https://github.com/Aloxaf/fzf-tab/archive/refs/tags/v1.3.0.tar.gz"
+  exact = true
+  stripComponents = 1
+
+[".local/share/tmux/plugins/tmux-resurrect"]
+  type = "archive"
+  url = "https://github.com/tmux-plugins/tmux-resurrect/archive/refs/tags/v4.0.0.tar.gz"
+  exact = true
+  stripComponents = 1
+
+[".local/share/tmux/plugins/tmux-continuum"]
+  type = "archive"
+  url = "https://github.com/tmux-plugins/tmux-continuum/archive/refs/tags/v3.1.0.tar.gz"
+  exact = true
+  stripComponents = 1
+
+# Matches the font-sketchybar-app-font cask version in the Brewfile.
+[".config/sketchybar/helpers/icon_map.sh"]
+  type = "file"
+  url = "https://github.com/kvndrsslr/sketchybar-app-font/releases/download/v3.0.12/icon_map.sh"
+  executable = true

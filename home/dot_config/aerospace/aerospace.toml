@@ -1,0 +1,155 @@
+# omamac AeroSpace — Omarchy/Hyprland-style tiling. Hyper = Caps Lock (held) = cmd+ctrl+alt.
+# Reference: https://nikitabobko.github.io/AeroSpace/guide
+
+start-at-login = true
+
+# SketchyBar & JankyBorders run as brew services; just nudge the bar on start.
+after-startup-command = ['exec-and-forget sketchybar --trigger aerospace_workspace_change']
+exec-on-workspace-change = ['/bin/bash', '-c',
+  'sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE']
+
+enable-normalization-flatten-containers = true
+enable-normalization-opposite-orientation-for-nested-containers = true
+default-root-container-layout = 'tiles'
+default-root-container-orientation = 'auto'
+accordion-padding = 30
+automatically-unhide-macos-hidden-apps = true
+on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
+
+# Bindings are by physical key, so they keep working with the Hebrew layout active.
+[key-mapping]
+preset = 'qwerty'
+
+[gaps]
+inner.horizontal = 10
+inner.vertical = 10
+outer.left = 10
+outer.right = 10
+outer.bottom = 10
+outer.top = 44            # 34px SketchyBar + breathing room
+
+[workspace-to-monitor-force-assignment]
+# Filled per desk setup if wanted, e.g. 3 = 'secondary'
+
+[mode.main.binding]
+# --- Launch ---------------------------------------------------------------------
+cmd-ctrl-alt-enter = 'exec-and-forget ~/.local/bin/ghostty-new'
+cmd-ctrl-alt-e = 'exec-and-forget ~/.local/bin/ghostty-new y'
+cmd-ctrl-alt-b = 'exec-and-forget open -a Safari'
+cmd-ctrl-alt-q = 'close'
+
+# --- Focus / move (vim keys) ----------------------------------------------------------
+cmd-ctrl-alt-h = 'focus left'
+cmd-ctrl-alt-j = 'focus down'
+cmd-ctrl-alt-k = 'focus up'
+cmd-ctrl-alt-l = 'focus right'
+cmd-ctrl-alt-shift-h = 'move left'
+cmd-ctrl-alt-shift-j = 'move down'
+cmd-ctrl-alt-shift-k = 'move up'
+cmd-ctrl-alt-shift-l = 'move right'
+
+# --- Layout ---------------------------------------------------------------------
+cmd-ctrl-alt-f = 'fullscreen'
+cmd-ctrl-alt-t = 'layout floating tiling'
+cmd-ctrl-alt-slash = 'layout tiles horizontal vertical'
+cmd-ctrl-alt-comma = 'layout accordion horizontal vertical'
+cmd-ctrl-alt-minus = 'resize smart -60'
+cmd-ctrl-alt-equal = 'resize smart +60'
+cmd-ctrl-alt-r = 'mode resize'
+
+# --- Workspaces -------------------------------------------------------------------
+cmd-ctrl-alt-1 = 'workspace 1'
+cmd-ctrl-alt-2 = 'workspace 2'
+cmd-ctrl-alt-3 = 'workspace 3'
+cmd-ctrl-alt-4 = 'workspace 4'
+cmd-ctrl-alt-5 = 'workspace 5'
+cmd-ctrl-alt-6 = 'workspace 6'
+cmd-ctrl-alt-7 = 'workspace 7'
+cmd-ctrl-alt-8 = 'workspace 8'
+cmd-ctrl-alt-9 = 'workspace 9'
+cmd-ctrl-alt-shift-1 = ['move-node-to-workspace 1', 'exec-and-forget sketchybar --trigger aerospace_workspace_change']
+cmd-ctrl-alt-shift-2 = ['move-node-to-workspace 2', 'exec-and-forget sketchybar --trigger aerospace_workspace_change']
+cmd-ctrl-alt-shift-3 = ['move-node-to-workspace 3', 'exec-and-forget sketchybar --trigger aerospace_workspace_change']
+cmd-ctrl-alt-shift-4 = ['move-node-to-workspace 4', 'exec-and-forget sketchybar --trigger aerospace_workspace_change']
+cmd-ctrl-alt-shift-5 = ['move-node-to-workspace 5', 'exec-and-forget sketchybar --trigger aerospace_workspace_change']
+cmd-ctrl-alt-shift-6 = ['move-node-to-workspace 6', 'exec-and-forget sketchybar --trigger aerospace_workspace_change']
+cmd-ctrl-alt-shift-7 = ['move-node-to-workspace 7', 'exec-and-forget sketchybar --trigger aerospace_workspace_change']
+cmd-ctrl-alt-shift-8 = ['move-node-to-workspace 8', 'exec-and-forget sketchybar --trigger aerospace_workspace_change']
+cmd-ctrl-alt-shift-9 = ['move-node-to-workspace 9', 'exec-and-forget sketchybar --trigger aerospace_workspace_change']
+cmd-ctrl-alt-tab = 'workspace-back-and-forth'
+cmd-ctrl-alt-shift-tab = 'move-workspace-to-monitor --wrap-around next'
+cmd-ctrl-alt-period = 'focus-monitor --wrap-around next'
+
+cmd-ctrl-alt-semicolon = 'mode service'
+
+[mode.resize.binding]
+h = 'resize width -60'
+j = 'resize height +60'
+k = 'resize height -60'
+l = 'resize width +60'
+equal = 'balance-sizes'
+enter = 'mode main'
+esc = 'mode main'
+
+# Hyper+; then: r reload config, f float/tile, b balance, backspace close all other windows.
+[mode.service.binding]
+esc = ['reload-config', 'mode main']
+r = ['reload-config', 'mode main']
+f = ['layout floating tiling', 'mode main']
+b = ['balance-sizes', 'mode main']
+backspace = ['close-all-windows-but-current', 'mode main']
+cmd-ctrl-alt-h = ['join-with left', 'mode main']
+cmd-ctrl-alt-j = ['join-with down', 'mode main']
+cmd-ctrl-alt-k = ['join-with up', 'mode main']
+cmd-ctrl-alt-l = ['join-with right', 'mode main']
+
+# --- Window rules ---------------------------------------------------------------
+[[on-window-detected]]
+if.app-id = 'com.apple.Safari'
+run = 'move-node-to-workspace 2'
+
+[[on-window-detected]]
+if.app-id = 'com.tinyspeck.slackmacgap'
+run = 'move-node-to-workspace 3'
+
+[[on-window-detected]]
+if.app-id = 'com.microsoft.teams2'
+run = 'move-node-to-workspace 3'
+
+[[on-window-detected]]
+if.app-id = 'com.microsoft.Outlook'
+run = 'move-node-to-workspace 4'
+
+# Small utility windows float instead of tiling.
+[[on-window-detected]]
+if.app-id = 'com.apple.systempreferences'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-id = 'com.raycast.macos'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-id = 'com.apple.ActivityMonitor'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-id = 'com.apple.calculator'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-id = 'com.apple.archiveutility'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-id = 'com.maxgoedjen.Secretive.Host'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-id = 'org.pqrs.Karabiner-Elements.Settings'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-id = 'com.apple.finder'
+if.window-title-regex-substring = '(Copy|Move|Info|Connect)'
+run = 'layout floating'

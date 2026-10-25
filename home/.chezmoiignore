@@ -1,0 +1,19 @@
+README.md
+
+{{- if ne .chezmoi.os "darwin" }}
+# Linux servers / Coder workspaces get only the terminal stack.
+.config/aerospace
+.config/borders
+.config/ghostty
+.config/karabiner
+.config/raycast
+.config/sketchybar
+.local/bin/theme
+.local/bin/dot-push
+.hushlogin
+{{- end }}
+
+{{- if ne .chezmoi.os "darwin" }}
+# Remote hosts keep their own ssh config.
+.ssh
+{{- end }}
