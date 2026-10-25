@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Palette from the active omachy theme, as SketchyBar 0xAARRGGBB colors.
-THEME_ENV="$HOME/.config/omachy/current/theme.env"
-[[ -r $THEME_ENV ]] || THEME_ENV="$HOME/.config/omachy/themes/tokyonight/theme.env"
+# Palette from the active omacy theme, as SketchyBar 0xAARRGGBB colors.
+THEME_ENV="$HOME/.config/omacy/current/theme.env"
+[[ -r $THEME_ENV ]] || THEME_ENV="$HOME/.config/omacy/themes/tokyonight/theme.env"
 # shellcheck disable=SC1090
 source "$THEME_ENV"
 

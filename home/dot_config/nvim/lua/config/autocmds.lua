@@ -3,7 +3,7 @@
 if vim.fn.executable("macism") == 1 and not (vim.env.SSH_CONNECTION or vim.env.SSH_TTY) then
   local english = "com.apple.keylayout.ABC"
   local insert_source = nil
-  local group = vim.api.nvim_create_augroup("omachy_input_source", { clear = true })
+  local group = vim.api.nvim_create_augroup("omacy_input_source", { clear = true })
 
   vim.api.nvim_create_autocmd("InsertLeave", {
     group = group,

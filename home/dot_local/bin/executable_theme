@@ -6,7 +6,7 @@
 #   theme --current  print the active theme
 set -euo pipefail
 
-OMA="$HOME/.config/omachy"
+OMA="$HOME/.config/omacy"
 THEMES="$OMA/themes"
 list() { for d in "$THEMES"/*/; do basename "$d"; done; }
 

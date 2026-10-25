@@ -1,4 +1,4 @@
-# omachy
+# omacy
 
 An Omarchy-inspired, keyboard-first macOS setup: tiling windows, Tokyo Night everywhere, terminal-centric.
 The same shell / tmux / Neovim config also deploys to Linux servers and Coder workspaces.
@@ -71,7 +71,7 @@ theme              # fzf picker
 theme gruvbox      # Ghostty, nvim (live), tmux, bar, borders, btop, wallpaper
 ```
 
-Add a theme: `home/dot_config/omachy/themes/<name>/theme.env` (copy one), then
+Add a theme: `home/dot_config/omacy/themes/<name>/theme.env` (copy one), then
 `uv run --with pillow --with numpy scripts/gen-wallpapers.py` to render its wallpaper.
 
 ## Remote hosts & Coder

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# omachy SketchyBar — Waybar-style top bar. Colors follow `theme`.
+# omacy SketchyBar — Waybar-style top bar. Colors follow `theme`.
 CONFIG_DIR="${CONFIG_DIR:-$HOME/.config/sketchybar}"
 PLUGIN_DIR="$CONFIG_DIR/plugins"
 export PATH="/opt/homebrew/bin:$PATH"

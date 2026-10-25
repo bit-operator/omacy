@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # JankyBorders: accent border on the focused window. Re-run to apply a new theme to the running instance.
-THEME_ENV="$HOME/.config/omachy/current/theme.env"
-[[ -r $THEME_ENV ]] || THEME_ENV="$HOME/.config/omachy/themes/tokyonight/theme.env"
+THEME_ENV="$HOME/.config/omacy/current/theme.env"
+[[ -r $THEME_ENV ]] || THEME_ENV="$HOME/.config/omacy/themes/tokyonight/theme.env"
 source "$THEME_ENV"
 
 options=(

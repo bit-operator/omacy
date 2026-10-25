@@ -1,5 +1,5 @@
 -- Set by dot-push on remotes without internet. Read from env: specs are parsed before options.lua.
-local offline = vim.env.OMACHY_OFFLINE == "1"
+local offline = vim.env.OMACY_OFFLINE == "1"
 
 return {
   -- C-h/j/k/l moves across nvim splits and tmux panes alike (pairs with tmux.conf).

@@ -24,8 +24,8 @@ autoload -Uz edit-command-line && zle -N edit-command-line
 bindkey -M vicmd 'v' edit-command-line
 
 # Beam cursor in insert mode, block in normal mode.
-_omachy_cursor() { [[ $KEYMAP == vicmd ]] && printf '\e[2 q' || printf '\e[6 q'; }
-zle-keymap-select() { _omachy_cursor; }
-zle-line-init() { _omachy_cursor; }
+_omacy_cursor() { [[ $KEYMAP == vicmd ]] && printf '\e[2 q' || printf '\e[6 q'; }
+zle-keymap-select() { _omacy_cursor; }
+zle-line-init() { _omacy_cursor; }
 zle -N zle-keymap-select
 zle -N zle-line-init

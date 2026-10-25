@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
-# omachy Linux toolset — static release binaries from GitHub, installed under a prefix (default ~/.local).
+# omacy Linux toolset — static release binaries from GitHub, installed under a prefix (default ~/.local).
 # Needs only curl + tar + api.github.com/github.com access: no root, no apt, no PyPI, no mise.run.
 # Used by install.sh on Coder/servers, and by dot-push on the Mac to build offline bundles.
 #
-#   scripts/linux-tools.sh install [prefix] [arch]   install missing tools (OMACHY_UPDATE=1 reinstalls)
+#   scripts/linux-tools.sh install [prefix] [arch]   install missing tools (OMACY_UPDATE=1 reinstalls)
 #   scripts/linux-tools.sh check   [arch]            print the asset each tool resolves to
 
 # "binary github-repo asset-regex(ERE)" — space-separated. Placeholders: @R rust arch (x86_64/aarch64),
 # @G go arch (amd64/arm64), @A alt arch (x86_64/arm64), @T tree-sitter arch (x64/arm64). Static (musl) builds win.
-OMACHY_TOOLS=(
+OMACY_TOOLS=(
   "chezmoi twpayne/chezmoi ^chezmoi_[0-9.]+_linux(-musl)?_@G\\.tar\\.gz$"
   "fzf junegunn/fzf ^fzf-[0-9.]+-linux_@G\\.tar\\.gz$"
   "rg BurntSushi/ripgrep ^ripgrep-[0-9.]+-@R-unknown-linux-(musl|gnu)\\.tar\\.gz$"
@@ -24,7 +24,7 @@ OMACHY_TOOLS=(
   "tree-sitter tree-sitter/tree-sitter ^tree-sitter-linux-@T\\.gz$"
 )
 # Whole-directory installs (prefix/opt/<name>, bin symlinked).
-OMACHY_DIRS=(
+OMACY_DIRS=(
   "nvim neovim/neovim ^nvim-linux-@A\\.tar\\.gz$ bin/nvim"
   "zsh romkatv/zsh-bin ^zsh-[0-9.]+-linux-@R\\.tar\\.gz$ bin/zsh"
 )
@@ -65,14 +65,14 @@ _ot_fetch() { # url -> extracted dir on stdout
   printf '%s' "$tmp"
 }
 
-omachy_linux_tools() { # prefix [arch]
+omacy_linux_tools() { # prefix [arch]
   local prefix=${1:-$HOME/.local} entry name repo re bin url tmp found rel
   _ot_arch "${2:-}" || return 1
   mkdir -p "$prefix/bin" "$prefix/opt"
 
-  for entry in "${OMACHY_TOOLS[@]}"; do
+  for entry in "${OMACY_TOOLS[@]}"; do
     read -r name repo re <<<"$entry"
-    [[ -x $prefix/bin/$name && -z ${OMACHY_UPDATE:-} ]] && continue
+    [[ -x $prefix/bin/$name && -z ${OMACY_UPDATE:-} ]] && continue
     url=$(_ot_asset "$repo" "$(_ot_regex "$re")") || url=
     [[ -n $url ]] || { _ot_log "✗ $name: no release asset found ($repo)"; continue; }
     tmp=$(_ot_fetch "$url")
@@ -81,9 +81,9 @@ omachy_linux_tools() { # prefix [arch]
     rm -rf "$tmp"
   done
 
-  for entry in "${OMACHY_DIRS[@]}"; do
+  for entry in "${OMACY_DIRS[@]}"; do
     read -r name repo re rel <<<"$entry"
-    [[ -x $prefix/opt/$name/$rel && -z ${OMACHY_UPDATE:-} ]] && continue
+    [[ -x $prefix/opt/$name/$rel && -z ${OMACY_UPDATE:-} ]] && continue
     [[ $name == zsh ]] && command -v zsh >/dev/null && [[ $(command -v zsh) != "$prefix"/* ]] && continue # system zsh wins
     url=$(_ot_asset "$repo" "$(_ot_regex "$re")") || url=
     [[ -n $url ]] || { _ot_log "✗ $name: no release asset found ($repo)"; continue; }
@@ -99,10 +99,10 @@ omachy_linux_tools() { # prefix [arch]
   [[ -x $prefix/opt/zsh/share/zsh/5.8/scripts/relocate ]] && "$prefix/opt/zsh/share/zsh/5.8/scripts/relocate" >/dev/null 2>&1 || true
 }
 
-omachy_linux_tools_check() { # [arch]
+omacy_linux_tools_check() { # [arch]
   local entry name repo re rel
   _ot_arch "${1:-}" || return 1
-  for entry in "${OMACHY_TOOLS[@]}" "${OMACHY_DIRS[@]}"; do
+  for entry in "${OMACY_TOOLS[@]}" "${OMACY_DIRS[@]}"; do
     read -r name repo re rel <<<"$entry"
     printf '%-12s %s\n' "$name" "$(_ot_asset "$repo" "$(_ot_regex "$re")" | sed 's#.*/##')"
   done
@@ -111,8 +111,8 @@ omachy_linux_tools_check() { # [arch]
 if [[ ${BASH_SOURCE[0]:-} == "$0" ]]; then
   set -euo pipefail
   case ${1:-} in
-    install) omachy_linux_tools "${2:-$HOME/.local}" "${3:-}" ;;
-    check) omachy_linux_tools_check "${2:-}" ;;
+    install) omacy_linux_tools "${2:-$HOME/.local}" "${3:-}" ;;
+    check) omacy_linux_tools_check "${2:-}" ;;
     *) sed -n '2,7s/^# \{0,1\}//p' "$0"; exit 2 ;;
   esac
 fi

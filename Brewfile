@@ -1,4 +1,4 @@
-# omachy — single source of truth for macOS packages.
+# omacy — single source of truth for macOS packages.
 # Apply with: brew bundle --file ~/Projects/MacOS-Personalization/Brewfile
 
 tap "nikitabobko/tap"        # AeroSpace
