@@ -90,12 +90,13 @@ chezmoi source that only writes into these hook points:
 | Hook | Purpose |
 |---|---|
 | `~/.config/zsh/conf.d/*.zsh` | env, aliases |
-| `~/.ssh/config.d/*` | hosts (`coder`, `work`, `local`) |
 | `~/.config/git/work.gitconfig` | applied to repos under `~/work/` |
 | `~/.config/git/local.gitconfig` | signing key etc. for this machine |
 | `~/.config/nvim/lua/plugins/local/*.lua` | editor tweaks |
 | `~/.config/sesh/local.toml` | named tmux sessions |
 | `~/.config/sketchybar/plugins/local/*.sh` | extra bar items (e.g. VPN) |
+
+`~/.ssh/config` is deliberately **not** managed: `coder config-ssh` owns its Coder block.
 
 **Never commit secrets.** Tokens come from the macOS Keychain / session env, never from dotfiles.
 Atuin history sync is disabled by design.
