@@ -11,22 +11,22 @@ y() {
 mcd() { mkdir -p -- "$1" && builtin cd -- "$1"; }
 
 # --- Long-command notifications ----------------------------------------------
-# Any command running ≥ OMAMAC_NOTIFY_AFTER seconds sends a desktop notification
+# Any command running ≥ OMACHY_NOTIFY_AFTER seconds sends a desktop notification
 # (OSC 9, handled by Ghostty) + a bell. Works over SSH and through tmux, so a
 # remote build that finishes while you're in Slack still taps you on the shoulder.
-: ${OMAMAC_NOTIFY_AFTER:=30}
+: ${OMACHY_NOTIFY_AFTER:=30}
 zmodload zsh/datetime
 
-_omamac_notify_preexec() { _omamac_cmd=$1; _omamac_start=$EPOCHREALTIME; }
-_omamac_notify_precmd() {
+_omachy_notify_preexec() { _omachy_cmd=$1; _omachy_start=$EPOCHREALTIME; }
+_omachy_notify_precmd() {
   local rc=$? elapsed
-  [[ -n $_omamac_start ]] || return
-  elapsed=$(( EPOCHREALTIME - _omamac_start ))
-  unset _omamac_start
-  (( elapsed >= OMAMAC_NOTIFY_AFTER )) || return
-  case ${_omamac_cmd%% *} in nvim|vim|vi|ssh|tmux|lazygit|yazi|btop|less|man|y|t|ta) return ;; esac
+  [[ -n $_omachy_start ]] || return
+  elapsed=$(( EPOCHREALTIME - _omachy_start ))
+  unset _omachy_start
+  (( elapsed >= OMACHY_NOTIFY_AFTER )) || return
+  case ${_omachy_cmd%% *} in nvim|vim|vi|ssh|tmux|lazygit|yazi|btop|less|man|y|t|ta) return ;; esac
   local mark=$([[ $rc == 0 ]] && print ✓ || print "✗ ($rc)")
-  local msg="$mark ${_omamac_cmd[1,60]} — ${HOST%%.*} — $(printf '%.0f' $elapsed)s"
+  local msg="$mark ${_omachy_cmd[1,60]} — ${HOST%%.*} — $(printf '%.0f' $elapsed)s"
   if [[ -n $TMUX ]]; then
     printf '\ePtmux;\e\e]9;%s\a\e\\' "$msg"
   else
@@ -35,5 +35,5 @@ _omamac_notify_precmd() {
   printf '\a'
 }
 autoload -Uz add-zsh-hook
-add-zsh-hook preexec _omamac_notify_preexec
-precmd_functions=(_omamac_notify_precmd $precmd_functions)   # first, so $? is the command's
+add-zsh-hook preexec _omachy_notify_preexec
+precmd_functions=(_omachy_notify_precmd $precmd_functions)   # first, so $? is the command's

@@ -2,7 +2,7 @@
   "global": { "show_in_menu_bar": false },
   "profiles": [
     {
-      "name": "omamac",
+      "name": "omachy",
       "selected": true,
       "virtual_hid_keyboard": { "keyboard_type_v2": "ansi" },
       "complex_modifications": {

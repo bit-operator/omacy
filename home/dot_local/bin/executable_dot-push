@@ -10,7 +10,7 @@ host=${1:?usage: dot-push <ssh-host> [--offline|--online]}
 mode=${2:-auto}
 REPO="$(chezmoi source-path)/.."
 REPO="$(cd "$REPO" && pwd)"
-CACHE="$HOME/.cache/omamac"
+CACHE="$HOME/.cache/omachy"
 log() { printf '\033[1;34m==>\033[0m %s\n' "$*"; }
 
 name=$(chezmoi data --format json | jq -r .name)
@@ -23,56 +23,22 @@ read -r arch online < <(ssh "$host" 'printf "%s " "$(uname -m)"; curl -fsS -m 6 
 log "$host: arch=$arch internet=$online"
 
 log "Copying repo"
-ssh "$host" 'mkdir -p ~/.local/share/omamac'
-rsync -az --delete --exclude .git --exclude '*.jpg' "$REPO/" "$host:.local/share/omamac/"
+ssh "$host" 'mkdir -p ~/.local/share/omachy'
+rsync -az --delete --exclude .git --exclude '*.jpg' "$REPO/" "$host:.local/share/omachy/"
 
 if [[ $online == yes ]]; then
-  ssh -t "$host" "OMAMAC_NAME='$name' OMAMAC_EMAIL='$email' bash ~/.local/share/omamac/install.sh --minimal"
+  ssh -t "$host" "OMACHY_NAME='$name' OMACHY_EMAIL='$email' bash ~/.local/share/omachy/install.sh --minimal"
   exit 0
 fi
 
-# --- Offline bundle --------------------------------------------------------------------------
-case $arch in
-  x86_64) rarch=x86_64 garch=amd64 tsarch=x64 ;;
-  aarch64 | arm64) rarch=aarch64 garch=arm64 tsarch=arm64 ;;
-  *) echo "unsupported arch: $arch" >&2; exit 1 ;;
-esac
-B="$CACHE/bundle-linux-$rarch"
-rm -rf "$B" && mkdir -p "$B/bin" "$B/share/nvim" "$B/share/zsh" "$B/share/tmux" "$CACHE/dl"
+# --- Offline bundle: download the Linux tools here, ship them -------------------------------
+# shellcheck disable=SC1091
+source "$REPO/scripts/linux-tools.sh"
+B="$CACHE/bundle-linux-$arch"
+rm -rf "$B" && mkdir -p "$B/share/nvim" "$B/share/zsh" "$B/share/tmux"
 
-# Latest release asset URL for a GitHub repo matching a regex.
-asset() {
-  curl -fsSL "https://api.github.com/repos/$1/releases/latest" |
-    jq -r --arg re "$2" '.assets[] | select(.name | test($re)) | .browser_download_url' | head -1
-}
-fetch() { # repo asset-regex binary-name
-  local url file dir found
-  url=$(asset "$1" "$2")
-  [[ -n $url ]] || { echo "  no release asset for $1 matching $2" >&2; return 1; }
-  file="$CACHE/dl/${url##*/}" dir="$CACHE/dl/$3.d"
-  [[ -f $file ]] || curl -fsSL -o "$file" "$url"
-  rm -rf "$dir" && mkdir -p "$dir"
-  case $file in
-    *.tar.gz | *.tgz) tar -xzf "$file" -C "$dir" ;;
-    *.gz) gunzip -c "$file" >"$dir/$3" ;;
-  esac
-  found=$(find "$dir" -type f -name "$3" | head -1)
-  [[ -n $found ]] || { echo "  $3 not found in ${url##*/}" >&2; return 1; }
-  install -m 755 "$found" "$B/bin/$3"
-  echo "  $3 ← ${url##*/}"
-}
-
-log "Building offline bundle for linux/$rarch"
-nvim_url=$(asset neovim/neovim "^nvim-linux-$rarch\\.tar\\.gz$")
-curl -fsSL "$nvim_url" | tar -xz -C "$B" && mv "$B/nvim-linux-$rarch" "$B/nvim" && echo "  nvim ← ${nvim_url##*/}"
-fetch twpayne/chezmoi "^chezmoi_[0-9.]+_linux-musl_$garch\\.tar\\.gz$" chezmoi
-fetch junegunn/fzf "^fzf-[0-9.]+-linux_$garch\\.tar\\.gz$" fzf
-fetch BurntSushi/ripgrep "^ripgrep-[0-9.]+-$rarch-unknown-linux-musl\\.tar\\.gz$" rg
-fetch sharkdp/fd "^fd-v[0-9.]+-$rarch-unknown-linux-musl\\.tar\\.gz$" fd
-fetch ajeetdsouza/zoxide "^zoxide-[0-9.]+-$rarch-unknown-linux-musl\\.tar\\.gz$" zoxide
-fetch starship/starship "^starship-$rarch-unknown-linux-musl\\.tar\\.gz$" starship
-fetch jesseduffield/lazygit "^lazygit_[0-9.]+_[Ll]inux_${rarch/aarch64/arm64}\\.tar\\.gz$" lazygit
-fetch tree-sitter/tree-sitter "^tree-sitter-linux-$tsarch\\.gz$" tree-sitter
+log "Building offline bundle for linux/$arch"
+omachy_linux_tools "$B" "$arch"
 
 # Plugins are plain Lua/shell — portable from this Mac.
 cp -R "$HOME/.local/share/nvim/lazy" "$B/share/nvim/lazy"
@@ -80,5 +46,5 @@ cp -R "$HOME/.local/share/zsh/plugins" "$B/share/zsh/plugins"
 cp -R "$HOME/.local/share/tmux/plugins" "$B/share/tmux/plugins"
 
 log "Shipping bundle ($(du -sh "$B" | cut -f1))"
-rsync -az --delete "$B/" "$host:.local/share/omamac-bundle/"
-ssh -t "$host" "OMAMAC_NAME='$name' OMAMAC_EMAIL='$email' bash ~/.local/share/omamac/install.sh --minimal --offline"
+rsync -az --delete "$B/" "$host:.local/share/omachy-bundle/"
+ssh -t "$host" "OMACHY_NAME='$name' OMACHY_EMAIL='$email' bash ~/.local/share/omachy/install.sh --minimal --offline"

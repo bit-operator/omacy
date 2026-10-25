@@ -1,4 +1,4 @@
-# omamac AeroSpace — Omarchy/Hyprland-style tiling. Hyper = Caps Lock (held) = cmd+ctrl+alt.
+# omachy AeroSpace — Omarchy/Hyprland-style tiling. Hyper = Caps Lock (held) = cmd+ctrl+alt.
 # Reference: https://nikitabobko.github.io/AeroSpace/guide
 
 start-at-login = true

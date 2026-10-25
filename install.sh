@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# omamac bootstrap — idempotent, safe to re-run.
+# omachy bootstrap — idempotent, safe to re-run.
 #   ./install.sh                     macOS: packages, dotfiles, services, macOS defaults
 #   ./install.sh --minimal           Linux server / Coder workspace (online): terminal stack only
 #   ./install.sh --minimal --offline Linux without internet: uses the bundle shipped by `dot-push`
-# Identity for git on remotes: OMAMAC_NAME / OMAMAC_EMAIL env vars (dot-push passes them).
+# Identity for git on remotes: OMACHY_NAME / OMACHY_EMAIL env vars (dot-push passes them).
 set -euo pipefail
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -42,13 +42,17 @@ if ((!MINIMAL)); then
 fi
 
 # ------------------------------------------------------------------------------ Linux / remote
+# Coder runs this on every workspace start (dotfiles URL). $HOME persists, the rest of the system resets,
+# so everything lives under ~/.local and only missing pieces are downloaded. OMACHY_UPDATE=1 refreshes tools.
+source "$REPO/scripts/linux-tools.sh"
+
 if ((OFFLINE)); then
-  BUNDLE="$HOME/.local/share/omamac-bundle"
+  BUNDLE="$HOME/.local/share/omachy-bundle"
   [[ -d $BUNDLE/bin ]] || { echo "No bundle at $BUNDLE — run 'dot-push <host>' from the Mac." >&2; exit 1; }
   log "Offline: installing bundled tools"
-  cp -f "$BUNDLE"/bin/* "$BIN"/
-  rm -rf "$HOME/.local/opt/nvim" && mkdir -p "$HOME/.local/opt" && cp -R "$BUNDLE/nvim" "$HOME/.local/opt/nvim"
-  ln -sfn "$HOME/.local/opt/nvim/bin/nvim" "$BIN/nvim"
+  mkdir -p "$HOME/.local/opt"
+  cp -Rf "$BUNDLE"/opt/. "$HOME/.local/opt/"
+  cp -Pf "$BUNDLE"/bin/* "$BIN"/
   for d in nvim/lazy zsh/plugins tmux/plugins; do
     mkdir -p "$HOME/.local/share/${d%/*}"
     rm -rf "$HOME/.local/share/$d" && cp -R "$BUNDLE/share/$d" "$HOME/.local/share/$d"
@@ -56,24 +60,28 @@ if ((OFFLINE)); then
   log "Dotfiles (chezmoi, externals from bundle)"
   chezmoi init --source "$REPO" --apply --promptDefaults --exclude externals
   mkdir -p "$HOME/.config/zsh/conf.d"
-  printf 'export OMAMAC_OFFLINE=1   # written by install.sh --offline: no Mason / plugin downloads\n' \
-    >"$HOME/.config/zsh/conf.d/00-omamac-offline.zsh"
+  printf 'export OMACHY_OFFLINE=1   # written by install.sh --offline: no Mason / plugin downloads\n' \
+    >"$HOME/.config/zsh/conf.d/00-omachy-offline.zsh"
 else
-  log "Online: chezmoi + mise"
-  command -v chezmoi >/dev/null || sh -c "$(curl -fsLS https://get.chezmoi.io)" -- -b "$BIN"
-  command -v mise >/dev/null || curl -fsSL https://mise.run | MISE_INSTALL_PATH="$BIN/mise" sh
-  log "Terminal tools (mise, user-local)"
-  mise use -g -y neovim fzf ripgrep fd zoxide starship lazygit tree-sitter eza bat delta
+  log "Tools → ~/.local (only what's missing)"
+  omachy_linux_tools "$HOME/.local"
   log "Dotfiles (chezmoi)"
   chezmoi init --source "$REPO" --apply --promptDefaults
-  rm -f "$HOME/.config/zsh/conf.d/00-omamac-offline.zsh"
+  rm -f "$HOME/.config/zsh/conf.d/00-omachy-offline.zsh"
 fi
 
-if [[ ${SHELL##*/} != zsh ]]; then
-  if command -v zsh >/dev/null; then
-    log "Login shell is ${SHELL##*/}. Switch with: chsh -s \"$(command -v zsh)\"  (or ask IT / set it in the Coder template)"
-  else
-    log "zsh not installed here — tmux + nvim are set up; the shell config needs zsh."
-  fi
+# The login shell is reset with the system on Coder, so interactive bash hands over to zsh instead.
+if ! grep -q '>>> omachy >>>' "$HOME/.bashrc" 2>/dev/null; then
+  log "~/.bashrc: interactive shells switch to zsh"
+  cat >>"$HOME/.bashrc" <<'BASHRC'
+
+# >>> omachy >>> (managed by omachy install.sh; set OMACHY_NO_ZSH=1 to stay in bash)
+if [[ $- == *i* && -z ${ZSH_VERSION:-} && -z ${OMACHY_NO_ZSH:-} ]]; then
+  _omachy_zsh=$(command -v zsh 2>/dev/null || echo "$HOME/.local/bin/zsh")
+  [[ -x $_omachy_zsh ]] && SHELL=$_omachy_zsh exec "$_omachy_zsh" -l
+  unset _omachy_zsh
+fi
+# <<< omachy <<<
+BASHRC
 fi
 log "Done on $(hostname -s)."

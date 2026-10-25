@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# omamac macOS defaults — keyboard-first, quiet, tiling-friendly. Idempotent; user-level only.
+# omachy macOS defaults — keyboard-first, quiet, tiling-friendly. Idempotent; user-level only.
 # Originals were exported to ~/.dotfiles-backup-*/defaults before the first run.
 set -uo pipefail
 log() { printf '\033[1;34m==>\033[0m %s\n' "$*"; }

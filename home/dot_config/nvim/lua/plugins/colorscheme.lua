@@ -1,6 +1,6 @@
--- Colorscheme follows `theme <name>` (reads ~/.config/omamac/current/theme.env); Tokyo Night otherwise.
-local function omamac_colorscheme()
-  local f = io.open(vim.fn.expand("~/.config/omamac/current/theme.env"), "r")
+-- Colorscheme follows `theme <name>` (reads ~/.config/omachy/current/theme.env); Tokyo Night otherwise.
+local function omachy_colorscheme()
+  local f = io.open(vim.fn.expand("~/.config/omachy/current/theme.env"), "r")
   if f then
     for line in f:lines() do
       local name = line:match('^NVIM_COLORSCHEME="?([^"]+)"?')
@@ -19,5 +19,5 @@ return {
   { "catppuccin/nvim", name = "catppuccin", lazy = true },
   { "ellisonleao/gruvbox.nvim", lazy = true },
   { "rebelot/kanagawa.nvim", lazy = true },
-  { "LazyVim/LazyVim", opts = { colorscheme = omamac_colorscheme() } },
+  { "LazyVim/LazyVim", opts = { colorscheme = omachy_colorscheme() } },
 }

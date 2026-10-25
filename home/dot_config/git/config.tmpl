@@ -1,6 +1,10 @@
+{{- if .name }}
 [user]
 	name = {{ .name }}
+{{- if .email }}
 	email = {{ .email }}
+{{- end }}
+{{- end }}
 
 # Machine-specific settings (signing key, credential helpers): ~/.config/git/local.gitconfig — not tracked.
 [include]

@@ -13,7 +13,7 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFilter
 
 W, H = 3840, 2160
-THEMES = pathlib.Path(__file__).resolve().parent.parent / "home/dot_config/omamac/themes"
+THEMES = pathlib.Path(__file__).resolve().parent.parent / "home/dot_config/omachy/themes"
 
 
 def palette(env: pathlib.Path) -> dict[str, np.ndarray]:

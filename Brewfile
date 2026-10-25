@@ -1,4 +1,4 @@
-# omamac — single source of truth for macOS packages.
+# omachy — single source of truth for macOS packages.
 # Apply with: brew bundle --file ~/Projects/MacOS-Personalization/Brewfile
 
 tap "nikitabobko/tap"        # AeroSpace
@@ -52,7 +52,6 @@ cask "karabiner-elements"    # needs admin (+ MDM approval on managed Macs) for 
 cask "ghostty"
 cask "raycast"
 cask "shortcat"              # keyboard "click hints" anywhere
-cask "secretive"             # SSH keys in the Secure Enclave
 
 # --- Fonts ------------------------------------------------------------------
 cask "font-jetbrains-mono-nerd-font"
