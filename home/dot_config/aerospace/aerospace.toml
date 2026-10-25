@@ -28,16 +28,16 @@ outer.right = 10
 outer.bottom = 10
 outer.top = 44            # 34px SketchyBar + breathing room
 
-# Docked: focus work on the external screen, comms on the laptop screen.
-# Laptop only: every workspace falls back to 'main'.
+# Docked: 1–5 live on the external screen, 6–9 on the laptop screen.
+# Laptop only (or lid closed): everything falls back to whichever screen is 'main'.
 [workspace-to-monitor-force-assignment]
 1 = ['secondary', 'main']    # terminal
 2 = ['secondary', 'main']    # browser
+3 = ['secondary', 'main']
+4 = ['secondary', 'main']
 5 = ['secondary', 'main']
-6 = ['secondary', 'main']
-7 = ['secondary', 'main']
-3 = ['built-in', 'main']     # Teams / Slack
-4 = ['built-in', 'main']     # Outlook
+6 = ['built-in', 'main']     # Teams / Slack
+7 = ['built-in', 'main']     # Outlook
 8 = ['built-in', 'main']
 9 = ['built-in', 'main']
 
@@ -77,17 +77,18 @@ cmd-ctrl-alt-6 = 'workspace 6'
 cmd-ctrl-alt-7 = 'workspace 7'
 cmd-ctrl-alt-8 = 'workspace 8'
 cmd-ctrl-alt-9 = 'workspace 9'
-cmd-ctrl-alt-shift-1 = ['move-node-to-workspace 1', 'exec-and-forget sketchybar --trigger aerospace_workspace_change']
-cmd-ctrl-alt-shift-2 = ['move-node-to-workspace 2', 'exec-and-forget sketchybar --trigger aerospace_workspace_change']
-cmd-ctrl-alt-shift-3 = ['move-node-to-workspace 3', 'exec-and-forget sketchybar --trigger aerospace_workspace_change']
-cmd-ctrl-alt-shift-4 = ['move-node-to-workspace 4', 'exec-and-forget sketchybar --trigger aerospace_workspace_change']
-cmd-ctrl-alt-shift-5 = ['move-node-to-workspace 5', 'exec-and-forget sketchybar --trigger aerospace_workspace_change']
-cmd-ctrl-alt-shift-6 = ['move-node-to-workspace 6', 'exec-and-forget sketchybar --trigger aerospace_workspace_change']
-cmd-ctrl-alt-shift-7 = ['move-node-to-workspace 7', 'exec-and-forget sketchybar --trigger aerospace_workspace_change']
-cmd-ctrl-alt-shift-8 = ['move-node-to-workspace 8', 'exec-and-forget sketchybar --trigger aerospace_workspace_change']
-cmd-ctrl-alt-shift-9 = ['move-node-to-workspace 9', 'exec-and-forget sketchybar --trigger aerospace_workspace_change']
+cmd-ctrl-alt-shift-1 = 'move-node-to-workspace --focus-follows-window 1'
+cmd-ctrl-alt-shift-2 = 'move-node-to-workspace --focus-follows-window 2'
+cmd-ctrl-alt-shift-3 = 'move-node-to-workspace --focus-follows-window 3'
+cmd-ctrl-alt-shift-4 = 'move-node-to-workspace --focus-follows-window 4'
+cmd-ctrl-alt-shift-5 = 'move-node-to-workspace --focus-follows-window 5'
+cmd-ctrl-alt-shift-6 = 'move-node-to-workspace --focus-follows-window 6'
+cmd-ctrl-alt-shift-7 = 'move-node-to-workspace --focus-follows-window 7'
+cmd-ctrl-alt-shift-8 = 'move-node-to-workspace --focus-follows-window 8'
+cmd-ctrl-alt-shift-9 = 'move-node-to-workspace --focus-follows-window 9'
 cmd-ctrl-alt-tab = 'workspace-back-and-forth'
-cmd-ctrl-alt-shift-tab = 'move-workspace-to-monitor --wrap-around next'
+cmd-ctrl-alt-shift-tab = 'move-workspace-to-monitor --wrap-around next'   # only unpinned workspaces (e.g. 10+)
+cmd-ctrl-alt-shift-period = 'move-node-to-monitor --focus-follows-window --wrap-around next'
 cmd-ctrl-alt-period = 'focus-monitor --wrap-around next'
 
 cmd-ctrl-alt-semicolon = 'mode service'
@@ -124,15 +125,15 @@ run = 'move-node-to-workspace 2'
 
 [[on-window-detected]]
 if.app-id = 'com.tinyspeck.slackmacgap'
-run = 'move-node-to-workspace 3'
+run = 'move-node-to-workspace 6'
 
 [[on-window-detected]]
 if.app-id = 'com.microsoft.teams2'
-run = 'move-node-to-workspace 3'
+run = 'move-node-to-workspace 6'
 
 [[on-window-detected]]
 if.app-id = 'com.microsoft.Outlook'
-run = 'move-node-to-workspace 4'
+run = 'move-node-to-workspace 7'
 
 # Small utility windows float instead of tiling.
 [[on-window-detected]]

@@ -16,9 +16,9 @@ w NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
 w NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
 w NSGlobalDomain NSAutomaticPeriodSubstitutionEnabled -bool false
 w com.apple.HIToolbox AppleFnUsageType -int 1         # Globe key = change input source (fallback)
-# Free ⌃Space / ⌃⌥Space (input source cycling) for the tmux prefix; Right ⌘ toggles EN/HE instead.
-w com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 60 '<dict><key>enabled</key><false/></dict>'
-w com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 61 '<dict><key>enabled</key><false/></dict>'
+# ⌃Space / ⌃⌥Space switch input source (macOS defaults, kept on purpose; tmux uses C-a). Right ⌘ tap also toggles EN/HE.
+w com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 60 '<dict><key>enabled</key><true/><key>value</key><dict><key>parameters</key><array><integer>32</integer><integer>49</integer><integer>262144</integer></array><key>type</key><string>standard</string></dict></dict>'
+w com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 61 '<dict><key>enabled</key><true/><key>value</key><dict><key>parameters</key><array><integer>32</integer><integer>49</integer><integer>786432</integer></array><key>type</key><string>standard</string></dict></dict>'
 
 log "Windows, animations, tiling (AeroSpace owns layout)"
 w NSGlobalDomain NSAutomaticWindowAnimationsEnabled -bool false

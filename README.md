@@ -44,17 +44,19 @@ Hyper = hold Caps Lock (⌘⌃⌥). Tap Caps = Esc.
 | Hyper + ` | Drop-down terminal |
 | Hyper + h j k l | Focus window |
 | Hyper + Shift + h j k l | Move window |
-| Hyper + 1…9 / Shift + 1…9 | Go to / send to workspace |
-| Hyper + Tab / Shift + Tab | Last workspace / move workspace to next monitor |
+| Hyper + 1…9 / Shift + 1…9 | Go to workspace / send window there (and follow) |
+| Hyper + Tab | Last workspace |
+| Hyper + . / Shift + . | Focus other screen / move window to other screen |
 | Hyper + F / T / Q | Fullscreen / float ↔ tile / close |
 | Hyper + / or , | Tiles ↔ accordion layouts |
 | Hyper + R, then h j k l | Resize mode (Esc to leave) |
 | Hyper + ; then r / b / f | Service mode: reload config / balance / float |
-| Right ⌘ (tap) | English ↔ Hebrew |
+| Ctrl + Space, or Right ⌘ (tap) | English ↔ Hebrew |
 
-Workspaces: 1 terminal · 2 Safari · 3 Slack/Teams · 4 Outlook · 5–9 free.
+Workspaces: **1–5 on the external screen** (1 terminal · 2 browser), **6–9 on the laptop** (6 Teams/Slack · 7 Outlook).
+Laptop alone: all on one screen. Workspaces are pinned to screens; move *windows* between screens.
 
-**tmux**: prefix `C-Space` locally, `C-a` inside SSH sessions (so nested tmux works).
+**tmux**: prefix `C-a` locally, `C-b` inside SSH sessions (so nested tmux works).
 `prefix s` session picker (projects, `^s` SSH hosts) · `prefix Tab` last session · `prefix g` lazygit ·
 `prefix | / -` split · `C-h/j/k/l` move across tmux panes *and* nvim splits.
 

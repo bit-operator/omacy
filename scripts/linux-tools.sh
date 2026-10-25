@@ -49,8 +49,10 @@ _ot_asset() {
   [[ -n $tag ]] || return 1
   names=$(curl -fsSL "https://github.com/$repo/releases/expanded_assets/$tag" |
     grep -oE "/$repo/releases/download/[^\"]+" | sed 's#.*/##' | sort -u | grep -E "$re") || return 1
-  # Prefer static musl builds (they run on old glibc too), then anything else.
-  { grep musl <<<"$names"; grep -v musl <<<"$names"; } | head -1 | sed "s#^#https://github.com/$repo/releases/download/$tag/#"
+  # Prefer static musl builds (they run on old glibc too), then anything else. Single awk: no
+  # grep-with-no-match or SIGPIPE exit codes to trip callers running under `set -o pipefail`.
+  awk -v base="https://github.com/$repo/releases/download/$tag/" \
+    '/musl/ { print base $0; done = 1; exit } !first { first = $0 } END { if (!done && first) print base first }' <<<"$names"
 }
 
 _ot_fetch() { # url -> extracted dir on stdout
@@ -86,8 +88,10 @@ omachy_linux_tools() { # prefix [arch]
     url=$(_ot_asset "$repo" "$(_ot_regex "$re")") || url=
     [[ -n $url ]] || { _ot_log "✗ $name: no release asset found ($repo)"; continue; }
     tmp=$(_ot_fetch "$url")
-    found=$(find "$tmp" -mindepth 1 -maxdepth 1 -type d | head -1)
-    rm -rf "$prefix/opt/$name" && mv "$found" "$prefix/opt/$name" && rm -rf "$tmp"
+    # Archives either wrap everything in one top folder (nvim) or unpack bin/ share/ directly (zsh-bin).
+    if [[ -e $tmp/$rel ]]; then found=$tmp; else found=$(find "$tmp" -mindepth 1 -maxdepth 1 -type d | head -1); fi
+    rm -rf "$prefix/opt/$name" && mv "$found" "$prefix/opt/$name"
+    [[ $found == "$tmp" ]] || rm -rf "$tmp"
     ln -sfn "$prefix/opt/$name/$rel" "$prefix/bin/$name"
     _ot_log "✓ $name ← ${url##*/}"
   done
@@ -104,7 +108,7 @@ omachy_linux_tools_check() { # [arch]
   done
 }
 
-if [[ ${BASH_SOURCE[0]} == "$0" ]]; then
+if [[ ${BASH_SOURCE[0]:-} == "$0" ]]; then
   set -euo pipefail
   case ${1:-} in
     install) omachy_linux_tools "${2:-$HOME/.local}" "${3:-}" ;;
